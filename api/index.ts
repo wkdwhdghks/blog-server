@@ -2,12 +2,12 @@ import { IncomingMessage, ServerResponse } from 'http';
 
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import * as express from 'express';
+import express, { Express } from 'express';
 
 import { AppModule } from '../src/app.module';
 
-const expressApp = express();
-let cachedServer: typeof expressApp | null = null;
+const expressApp: Express = express();
+let cachedServer: Express | null = null;
 
 async function bootstrap() {
   if (!cachedServer) {
