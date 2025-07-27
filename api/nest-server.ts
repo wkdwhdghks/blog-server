@@ -31,5 +31,6 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     await app.init();
     cachedHandler = app.getHttpAdapter().getInstance() as Express;
   }
+
   cachedHandler(req, res);
 }
