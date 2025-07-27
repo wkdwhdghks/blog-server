@@ -3,7 +3,8 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Express } from 'express';
-import { AppModule } from 'src/app.module';
+
+import { AppModule } from '../src/app.module';
 
 let cachedHandler: Express | null = null;
 
