@@ -1,5 +1,5 @@
 {
   "version": 2,
   "builds": [{ "src": "api/[...catchall].ts", "use": "@vercel/node" }],
-  "routes": [{ "src": "/api/(.*)", "dest": "api/[...catchall].ts" }]
+  "routes": [{ "src": "/(.*)", "dest": "api/[...catchall].ts" }]
 }
