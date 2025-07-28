@@ -1,9 +1,7 @@
-import { IncomingMessage, ServerResponse } from 'http';
-
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Express } from 'express';
-
+import type { Express } from 'express';
 import { AppModule } from '../src/app.module';
 
 let cachedHandler: Express | null = null;
