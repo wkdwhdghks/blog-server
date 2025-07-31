@@ -1,10 +1,10 @@
 import { Body, Controller, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { ERROR_CODES } from 'src/constants/error-codes';
-import { ERROR_MESSAGES } from 'src/constants/error-messages';
-import { SUCCESS_MESSAGES } from 'src/constants/success-messages';
-import { setAuthCookies } from 'src/utils/cookie';
+import { ERROR_CODES } from '../constants/error-codes';
+import { ERROR_MESSAGES } from '../constants/error-messages';
+import { SUCCESS_MESSAGES } from '../constants/success-messages';
+import { setAuthCookies } from '../utils/cookie';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 
