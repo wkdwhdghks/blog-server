@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 import type { Express } from 'express';
 import { AppModule } from '../src/app.module';
 
@@ -11,16 +12,14 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     const app = await NestFactory.create(AppModule);
 
     app.enableCors({
-      origin: 'http://localhost:3000',
+      origin: 'http://localhost:3001',
       credentials: true,
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     });
 
-    const config = new DocumentBuilder()
-      .setTitle('API 문서')
-      .setDescription('Nest.js 서버리스 Swagger 문서입니다.')
-      .setVersion('1.0')
-      .build();
+    app.use(cookieParser());
+
+    const config = new DocumentBuilder().setTitle('API 문서').setDescription('Nest.js Swagger 문서입니다.').setVersion('1.0').build();
 
     const document = SwaggerModule.createDocument(app, config);
 
