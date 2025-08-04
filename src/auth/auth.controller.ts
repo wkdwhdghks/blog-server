@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { UserService } from 'src/user/user.service';
 import { ERROR_CODES } from '../constants/error-codes';
+import { UserService } from '../user/user.service';
 import { setAuthCookies } from '../utils/cookie';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
