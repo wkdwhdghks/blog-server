@@ -1,9 +1,11 @@
 import { Body, Controller, Get, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { ERROR_MESSAGES } from 'src/constants/error-messages';
+import { SUCCESS_MESSAGES } from 'src/constants/success-messages';
 import { ERROR_CODES } from '../constants/error-codes';
 import { UserService } from '../user/user.service';
-import { setAuthCookies } from '../utils/cookie';
+import { clearAuthCookies, setAuthCookies } from '../utils/cookie';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 
@@ -44,15 +46,15 @@ export class AuthController {
 
     setAuthCookies(res, accessToken, refreshToken);
 
-    return { code: 1 };
+    return { code: 1, message: SUCCESS_MESSAGES.LOGIN };
   }
 
   @Post('refresh')
-  @ApiOperation({ summary: '토큰 재발급', description: '리프레시 토큰으로 액세스 토큰을 재발급합니다.' })
+  @ApiOperation({ summary: '토큰 재발급', description: '리프레시 토큰으로 새로운 액세스 토큰을 발급합니다.' })
   async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const refreshToken = req.cookies['refresh_token'];
     if (!refreshToken) {
-      throw new UnauthorizedException({ code: ERROR_CODES.REFRESH_TOKEN_NOT_FOUND });
+      throw new UnauthorizedException({ code: ERROR_CODES.REFRESH_TOKEN_NOT_FOUND, message: ERROR_MESSAGES.REFRESH_TOKEN_NOT_FOUND });
     }
 
     const payload = this.authService.verifyToken(refreshToken);
@@ -62,6 +64,22 @@ export class AuthController {
 
     setAuthCookies(res, tokens.access_token, tokens.refresh_token);
 
-    return { code: 1 };
+    return { code: 1, message: SUCCESS_MESSAGES.REFRESH };
+  }
+
+  @Post('logout')
+  @ApiOperation({ summary: '로그아웃', description: '서버에서 리프레시 토큰을 무효화하고 쿠키를 삭제합니다.' })
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const accessToken = req.cookies['access_token'];
+
+    try {
+      const payload = this.authService.verifyToken(accessToken);
+      await this.userService.updateRefreshToken(payload.sub, null);
+    } catch (error) {
+      console.log(error);
+    }
+
+    clearAuthCookies(res);
+    return { code: 1, message: SUCCESS_MESSAGES.LOGOUT };
   }
 }

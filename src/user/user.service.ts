@@ -15,7 +15,10 @@ export class UserService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async updateRefreshToken(userId: number, refreshToken: string): Promise<User> {
-    return this.prisma.user.update({ where: { id: userId }, data: { refreshToken: await bcrypt.hash(refreshToken, 10) } });
+  async updateRefreshToken(userId: number, refreshToken: string | null): Promise<User> {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { refreshToken: refreshToken ? await bcrypt.hash(refreshToken, 10) : null },
+    });
   }
 }

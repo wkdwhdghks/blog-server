@@ -24,31 +24,31 @@ export class AuthService {
     return user;
   }
 
-  generateToken(userId: number, expiresIn: string) {
+  generateToken(userId: number, expiresIn: string): string {
     return this.jwtService.sign({ sub: userId }, { expiresIn });
   }
 
-  generateAccessToken(userId: number) {
-    return this.generateToken(userId, '10s');
+  generateAccessToken(userId: number): string {
+    return this.generateToken(userId, '1h');
   }
 
-  generateRefreshToken(userId: number) {
-    return this.generateToken(userId, '20s');
+  generateRefreshToken(userId: number): string {
+    return this.generateToken(userId, '2h');
   }
 
-  verifyToken(token: string) {
+  verifyToken(token: string): { sub: number } {
     return this.jwtService.verify(token);
   }
 
-  async refreshTokens(userId: number, refreshToken: string) {
+  async refreshTokens(userId: number, refreshToken: string): Promise<{ access_token: string; refresh_token: string }> {
     const user = await this.userService.findById(userId);
     if (!user || !user.refreshToken) {
-      throw new UnauthorizedException({ code: ERROR_CODES.REFRESH_TOKEN_INVALID });
+      throw new UnauthorizedException({ code: ERROR_CODES.REFRESH_TOKEN_INVALID, message: ERROR_MESSAGES.REFRESH_TOKEN_INVALID });
     }
 
     const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
     if (!isValid) {
-      throw new UnauthorizedException({ code: ERROR_CODES.REFRESH_TOKEN_INVALID });
+      throw new UnauthorizedException({ code: ERROR_CODES.REFRESH_TOKEN_INVALID, message: ERROR_MESSAGES.REFRESH_TOKEN_INVALID });
     }
 
     const newAccessToken = this.generateAccessToken(userId);
