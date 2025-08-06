@@ -11,7 +11,7 @@ export class PostsController {
   @ApiOperation({ summary: '게시글 목록 조회', description: '게시글 전체 또는 태그별로 목록을 조회합니다.' })
   @ApiQuery({ name: 'tag', required: false })
   async getPosts(@Query('tag') tag?: string) {
-    return { data: await this.postsService.getPosts(tag) };
+    return await this.postsService.getPosts(tag);
   }
 
   @UseGuards(AuthGuard)
