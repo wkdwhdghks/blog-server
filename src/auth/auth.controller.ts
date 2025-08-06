@@ -3,7 +3,6 @@ import { ApiBody, ApiOperation } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { ERROR_CODES } from '../constants/error-codes';
 import { ERROR_MESSAGES } from '../constants/error-messages';
-import { SUCCESS_MESSAGES } from '../constants/success-messages';
 import { UserService } from '../user/user.service';
 import { clearAuthCookies, setAuthCookies } from '../utils/cookie';
 import { AuthService } from './auth.service';
@@ -20,14 +19,14 @@ export class AuthController {
   @ApiOperation({ summary: '내 정보 조회', description: '현재 로그인된 사용자의 정보를 반환합니다.' })
   async me(@Req() req: Request) {
     const accessToken = req.cookies['access_token'];
-    const defaultUserResponse = { data: { isLogin: false, user: null } };
+    const defaultUserResponse = { isLogin: false, user: null };
 
     if (!accessToken) return defaultUserResponse;
 
     try {
       const payload = this.authService.verifyToken(accessToken);
       const user = await this.userService.findById(payload.sub);
-      return user ? { ...defaultUserResponse, data: { isLogin: true, user: { id: user.id, email: user.email } } } : defaultUserResponse;
+      return user ? { isLogin: true, user: { id: user.id, email: user.email } } : defaultUserResponse;
     } catch {
       return defaultUserResponse;
     }
@@ -45,8 +44,6 @@ export class AuthController {
     await this.userService.updateRefreshToken(user.id, refreshToken);
 
     setAuthCookies(res, accessToken, refreshToken);
-
-    return { code: 1, message: SUCCESS_MESSAGES.LOGIN };
   }
 
   @Post('refresh')
@@ -62,7 +59,6 @@ export class AuthController {
       const userId = payload.sub;
       const tokens = await this.authService.refreshTokens(userId, refreshToken);
       setAuthCookies(res, tokens.access_token, tokens.refresh_token);
-      return { code: 1, message: SUCCESS_MESSAGES.REFRESH };
     } catch {
       throw new UnauthorizedException({ code: ERROR_CODES.REFRESH_TOKEN_INVALID, message: ERROR_MESSAGES.REFRESH_TOKEN_INVALID });
     }
@@ -73,20 +69,13 @@ export class AuthController {
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const accessToken = req.cookies['access_token'];
 
-    const logoutSuccess = () => {
-      clearAuthCookies(res);
-      return { code: 1, message: SUCCESS_MESSAGES.LOGOUT };
-    };
-
-    if (!accessToken) return logoutSuccess();
-
     try {
-      const payload = this.authService.verifyToken(accessToken);
-      await this.userService.updateRefreshToken(payload.sub, null);
-    } catch {
-      return logoutSuccess();
-    }
+      if (accessToken) {
+        const payload = this.authService.verifyToken(accessToken);
+        await this.userService.updateRefreshToken(payload.sub, null);
+      }
+    } catch {}
 
-    return logoutSuccess();
+    clearAuthCookies(res);
   }
 }

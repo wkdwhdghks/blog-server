@@ -3,6 +3,8 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import type { Express } from 'express';
+import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
+import { TransformInterceptor } from 'src/common/interceptors/transform.interceptor';
 import { AppModule } from '../src/app.module';
 
 let cachedHandler: Express | null = null;
@@ -18,6 +20,8 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     });
 
     app.use(cookieParser());
+    app.useGlobalInterceptors(new TransformInterceptor());
+    app.useGlobalFilters(new HttpExceptionFilter());
 
     const config = new DocumentBuilder().setTitle('API 문서').setDescription('Nest.js Swagger 문서입니다.').setVersion('1.0').build();
 
