@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiQuery } from '@nestjs/swagger';
-import { AuthGuard } from '../auth/auth.guard';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -14,7 +14,7 @@ export class PostsController {
     return await this.postsService.getPosts(tag);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('write')
   async writePost(@Body() body, @Req() req) {
     return { message: '글 작성 성공', user: req.user, data: body };
