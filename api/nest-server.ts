@@ -3,9 +3,9 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import type { Express } from 'express';
-import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
-import { TransformInterceptor } from 'src/common/interceptors/transform.interceptor';
 import { AppModule } from '../src/app.module';
+import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter';
+import { TransformInterceptor } from '../src/common/interceptors/transform.interceptor';
 
 let cachedHandler: Express | null = null;
 
