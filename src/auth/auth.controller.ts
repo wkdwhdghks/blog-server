@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Request, Response, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
-import { Cookies } from 'src/common/decorators/cookies.decorator';
-import { clearAuthCookies, setAuthCookies } from 'src/utils/cookie';
+import { Cookies } from '../common/decorators/cookies.decorator';
+import { clearAuthCookies, setAuthCookies } from '../utils/cookie';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
