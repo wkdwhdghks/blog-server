@@ -8,7 +8,7 @@ export class PostsService {
 
   async getPosts(tag?: string): Promise<Post[]> {
     if (tag) {
-      return this.prisma.post.findMany({ where: { tags: { contains: tag } }, orderBy: { createdAt: 'desc' } });
+      return this.prisma.post.findMany({ where: { tags: { has: tag } }, orderBy: { createdAt: 'desc' } });
     }
 
     return this.prisma.post.findMany({ orderBy: { createdAt: 'desc' } });
