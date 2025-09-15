@@ -15,6 +15,9 @@ export class PostsService {
       include: { tags: { select: { tag: { select: { name: true } } } } },
     });
 
-    return posts.map(({ tags, ...post }) => ({ ...post, tags: tags.map((postTag) => postTag.tag.name) }));
+    return posts.map(({ tags, ...post }) => ({
+      ...post,
+      tags: tags.map((postTag) => ({ name: postTag.tag.name })),
+    }));
   }
 }

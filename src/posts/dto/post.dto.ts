@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { TagDto } from 'src/tags/dto/tag.dto';
 
 export class PostDto {
   @ApiProperty({ description: '아이디' })
@@ -22,6 +23,6 @@ export class PostDto {
   @ApiProperty({ description: '예상 읽기 시간' })
   readingTime: number;
 
-  @ApiProperty({ description: '태그명 목록' })
-  tags: string[];
+  @ApiProperty({ description: '태그명 목록', type: [TagDto] })
+  tags: TagDto[];
 }

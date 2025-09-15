@@ -5,5 +5,5 @@ export class TagDto {
   name: string;
 
   @ApiProperty({ description: '게시글 수' })
-  count: number;
+  count?: number;
 }
