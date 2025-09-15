@@ -1,27 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PostDto {
-  @ApiProperty()
+  @ApiProperty({ description: '아이디' })
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({ description: '제목' })
   title: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: '내용' })
   content: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: '생성일' })
   createdAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({ description: '수정일' })
   updatedAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({ description: '요약' })
   summary: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: '예상 읽기 시간' })
   readingTime: number;
 
-  @ApiProperty()
+  @ApiProperty({ description: '태그명 목록' })
   tags: string[];
 }

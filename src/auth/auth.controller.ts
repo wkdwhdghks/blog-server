@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Request, Response, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { UserAuthDto } from 'src/users/dto/user.dto';
 import { Cookies } from '../common/decorators/cookies.decorator';
 import { clearAuthCookies, setAuthCookies } from '../utils/cookie';
 import { AuthService } from './auth.service';
@@ -15,6 +16,7 @@ export class AuthController {
   @UseGuards(OptionalJwtAuthGuard)
   @Get('me')
   @ApiOperation({ summary: '내 정보 조회', description: '현재 로그인된 사용자의 정보를 반환합니다.' })
+  @ApiOkResponse({ type: UserAuthDto })
   async me(@Request() req) {
     return req.user ? { isLogin: true, user: req.user } : { isLogin: false, user: null };
   }
@@ -36,8 +38,8 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: '로그아웃', description: '리프레시 토큰을 무효화하고 인증 쿠키를 삭제합니다.' })
   @Post('logout')
+  @ApiOperation({ summary: '로그아웃', description: '리프레시 토큰을 무효화하고 인증 쿠키를 삭제합니다.' })
   async logout(@Request() req, @Response({ passthrough: true }) res) {
     await this.authService.logout(req.user.id);
     clearAuthCookies(res);
