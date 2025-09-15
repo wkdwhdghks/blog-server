@@ -8,6 +8,40 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model User {
+  id           Int     @id @default(autoincrement())
+  email        String  @unique
+  password     String
+  refreshToken String?
+}
+
+model Post {
+  id          Int       @id @default(autoincrement())
+  title       String
+  content     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  summary     String
+  readingTime Int       @default(0)
+  Comment     Comment[]
+  tags        PostTag[]
+}
+
+model Tag {
+  id    Int       @id @default(autoincrement())
+  name  String    @unique
+  posts PostTag[]
+}
+
+model PostTag {
+  postId Int
+  tagId  Int
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+
 model Comment {
   id            Int       @id @default(autoincrement())
   nickname      String
@@ -18,23 +52,4 @@ model Comment {
   Comment       Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
   other_Comment Comment[] @relation("CommentToComment")
   Post          Post      @relation(fields: [postId], references: [id])
-}
-
-model Post {
-  id          Int       @id @default(autoincrement())
-  title       String
-  content     String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime
-  summary     String
-  tags        String[]  @default([])
-  readingTime Int       @default(0)
-  Comment     Comment[]
-}
-
-model User {
-  id           Int     @id @default(autoincrement())
-  email        String  @unique
-  password     String
-  refreshToken String?
 }

@@ -1,16 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { Post } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { PostDto } from './dto/post.dto';
 
 @Injectable()
 export class PostsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getPosts(tag?: string): Promise<Post[]> {
-    if (tag) {
-      return this.prisma.post.findMany({ where: { tags: { has: tag } }, orderBy: { createdAt: 'desc' } });
-    }
+  async getPosts(tag?: string): Promise<PostDto[]> {
+    const where = tag ? { tags: { some: { tag: { name: tag } } } } : {};
 
-    return this.prisma.post.findMany({ orderBy: { createdAt: 'desc' } });
+    const posts = await this.prisma.post.findMany({
+      where: where,
+      orderBy: { createdAt: 'desc' },
+      include: { tags: { select: { tag: { select: { name: true } } } } },
+    });
+
+    return posts.map(({ tags, ...post }) => ({ ...post, tags: tags.map((postTag) => postTag.tag.name) }));
   }
 }
