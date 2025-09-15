@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Request, Response, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { UserAuthDto } from 'src/users/dto/user.dto';
 import { Cookies } from '../common/decorators/cookies.decorator';
+import { UserAuthDto } from '../users/dto/user.dto';
 import { clearAuthCookies, setAuthCookies } from '../utils/cookie';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
