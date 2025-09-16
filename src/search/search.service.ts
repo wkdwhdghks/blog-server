@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class SearchService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async search(query?: string): Promise<PostDto[]> {
+  async getSearchPosts(query?: string): Promise<PostDto[]> {
     const where: Prisma.PostWhereInput = query
       ? {
           OR: [

@@ -12,6 +12,6 @@ export class SearchController {
   @ApiQuery({ name: 'q', required: false, description: '검색어' })
   @ApiOkResponse({ type: [PostDto] })
   async search(@Query('q') query?: string) {
-    return await this.searchService.search(query);
+    return await this.searchService.getSearchPosts(query);
   }
 }
