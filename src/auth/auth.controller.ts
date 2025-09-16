@@ -18,7 +18,7 @@ export class AuthController {
   @ApiOperation({ summary: '내 정보 조회', description: '현재 로그인된 사용자의 정보를 반환합니다.' })
   @ApiOkResponse({ type: UserAuthDto })
   async me(@Request() req) {
-    return req.user ? { isLogin: true, user: req.user } : { isLogin: false, user: null };
+    return { isLogin: !!req.user, user: req.user || null };
   }
 
   @UseGuards(AuthGuard('local'))

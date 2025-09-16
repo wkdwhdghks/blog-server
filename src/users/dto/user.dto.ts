@@ -13,5 +13,5 @@ export class UserAuthDto {
   isLogin: boolean;
 
   @ApiProperty({ description: '사용자 정보', type: UserDto })
-  user: UserDto;
+  user: UserDto | null;
 }

@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<UserDto | null> {
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.usersService.getUserByEmail(email);
 
     if (user && (await bcrypt.compare(password, user.password))) {
       const { password, refreshToken, ...result } = user;
@@ -37,7 +37,7 @@ export class AuthService {
 
   async refresh(refreshToken: string): Promise<TokenDto> {
     const payload = this.jwtService.verify(refreshToken);
-    const user = await this.usersService.findById(payload.sub);
+    const user = await this.usersService.getUserById(payload.sub);
 
     if (!user || !user.refreshToken || !(await bcrypt.compare(refreshToken, user.refreshToken))) {
       throw new UnauthorizedException({ code: ERROR_CODES.REFRESH_TOKEN_INVALID, message: ERROR_MESSAGES.REFRESH_TOKEN_INVALID });
