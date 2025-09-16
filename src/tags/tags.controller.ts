@@ -8,7 +8,7 @@ export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
   @Get()
-  @ApiOperation({ summary: '태그 목록 조회', description: '모든 태그와 각 태그의 게시글 수를 조회합니다.' })
+  @ApiOperation({ summary: '태그 목록 조회', description: '태그 목록과 각 태그의 사용 횟수를 조회합니다.' })
   @ApiOkResponse({ type: [TagDto] })
   async getTags(): Promise<TagDto[]> {
     return await this.tagsService.getTags();

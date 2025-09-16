@@ -9,8 +9,8 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  @ApiOperation({ summary: '게시글 목록 조회', description: '게시글 전체 또는 태그별로 목록을 조회합니다.' })
-  @ApiQuery({ name: 'tag', required: false })
+  @ApiOperation({ summary: '게시글 목록 조회', description: '전체 게시글 또는 특정 태그로 필터링된 게시글 목록을 조회합니다.' })
+  @ApiQuery({ name: 'tag', required: false, description: '태그명' })
   @ApiOkResponse({ type: [PostDto] })
   async getPosts(@Query('tag') tag?: string) {
     return await this.postsService.getPosts(tag);
