@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { PostDetailDto, PostDto } from './dto/post.dto';
+import { PostDetailDto, PostDto, UpdatePostDto } from './dto/post.dto';
 
 @Injectable()
 export class PostsService {
@@ -36,5 +36,23 @@ export class PostsService {
     const navigation = { prev: prevPost, next: nextPost };
 
     return { post, navigation };
+  }
+
+  async updatePost(id: number, updatePostDto: UpdatePostDto): Promise<PostDto> {
+    const { tags, ...post } = updatePostDto;
+
+    const updatedPost = await this.prisma.post.update({
+      where: { id },
+      data: {
+        ...post,
+        tags: {
+          deleteMany: {},
+          create: tags.map((tagName) => ({ tag: { connectOrCreate: { where: { name: tagName }, create: { name: tagName } } } })),
+        },
+      },
+      include: { tags: { include: { tag: { select: { name: true } } } } },
+    });
+
+    return { ...updatedPost, tags: updatedPost.tags.map((tag) => ({ name: tag.tag.name })) };
   }
 }
