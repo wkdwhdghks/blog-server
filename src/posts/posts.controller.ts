@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { PostDetailDto, PostDto } from './dto/post.dto';
+import { PostDetailDto, PostDto, UpdatePostDto } from './dto/post.dto';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -28,5 +28,15 @@ export class PostsController {
   @Post('write')
   async write(@Body() body, @Req() req) {
     return { message: '글 작성 성공', user: req.user, data: body };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  @ApiOperation({ summary: '게시글 수정', description: '게시글 정보를 수정합니다.' })
+  @ApiParam({ name: 'id', description: '게시글 ID' })
+  @ApiBody({ type: UpdatePostDto })
+  @ApiOkResponse({ type: PostDto })
+  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdatePostDto) {
+    return await this.postsService.updatePost(id, body);
   }
 }

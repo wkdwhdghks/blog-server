@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { TagDto } from '../../tags/dto/tag.dto';
 
 export class PostDto {
@@ -49,4 +49,9 @@ export class PostDetailDto {
 
   @ApiProperty({ description: '네비게이션', type: NavigationDto })
   navigation: NavigationDto;
+}
+
+export class UpdatePostDto extends OmitType(PostDto, ['id', 'createdAt', 'updatedAt', 'tags']) {
+  @ApiProperty({ description: '태그명 목록', type: [String] })
+  tags: string[];
 }
