@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ERROR_CODES } from 'src/constants/error-codes';
 import { ERROR_MESSAGES } from 'src/constants/error-messages';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreatePostDto } from './dto/create-post-dto';
 import { PostDto } from './dto/post.dto';
 import { PostDetailDto } from './dto/post-detail.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -39,6 +40,27 @@ export class PostsService {
     return { post, navigation };
   }
 
+  async createPost(data: CreatePostDto): Promise<PostDto> {
+    const { title, content, summary, readingTime, tags } = data;
+
+    return await this.prisma.$transaction(async (prisma) => {
+      const post = await prisma.post.create({ data: { title, content, summary, readingTime } });
+
+      await this.createPostTags(post.id, tags, prisma);
+
+      const createdPost = await prisma.post.findUnique({
+        where: { id: post.id },
+        include: { tags: { include: { tag: { select: { name: true } } } } },
+      });
+
+      if (!createdPost) {
+        throw new NotFoundException({ code: ERROR_CODES.POST_NOT_FOUND, message: ERROR_MESSAGES.POST_NOT_FOUND });
+      }
+
+      return { ...createdPost, tags: createdPost.tags.map(({ tag }) => ({ name: tag.name })) };
+    });
+  }
+
   async updatePost(id: number, data: UpdatePostDto): Promise<PostDto> {
     const post = await this.prisma.post.findUnique({ where: { id } });
 
@@ -48,25 +70,32 @@ export class PostsService {
 
     const { title, content, summary, readingTime, tags } = data;
 
-    const updatedPost = await this.prisma.post.update({
-      where: { id },
-      data: {
-        title,
-        content,
-        summary,
-        readingTime,
-        tags: {
-          deleteMany: {},
-          ...(tags.length > 0 && {
-            create: tags.map((name) => ({
-              tag: { connectOrCreate: { where: { name }, create: { name } } },
-            })),
-          }),
-        },
-      },
-      include: { tags: { include: { tag: { select: { name: true } } } } },
-    });
+    return await this.prisma.$transaction(async (prisma) => {
+      await prisma.post.update({ where: { id }, data: { title, content, summary, readingTime } });
 
-    return { ...updatedPost, tags: updatedPost.tags.map(({ tag }) => ({ name: tag.name })) };
+      await prisma.postTag.deleteMany({ where: { postId: id } });
+
+      await this.createPostTags(id, tags, prisma);
+
+      const updatedPost = await prisma.post.findUnique({
+        where: { id },
+        include: { tags: { include: { tag: { select: { name: true } } } } },
+      });
+
+      if (!updatedPost) {
+        throw new NotFoundException({ code: ERROR_CODES.POST_NOT_FOUND, message: ERROR_MESSAGES.POST_NOT_FOUND });
+      }
+
+      return { ...updatedPost, tags: updatedPost.tags.map(({ tag }) => ({ name: tag.name })) };
+    });
+  }
+
+  private async createPostTags(postId: number, tags: string[], prisma) {
+    if (tags && tags.length > 0) {
+      for (const name of tags) {
+        const tag = await prisma.tag.upsert({ where: { name }, create: { name }, update: {} });
+        await prisma.postTag.create({ data: { postId, tagId: tag.id } });
+      }
+    }
   }
 }
