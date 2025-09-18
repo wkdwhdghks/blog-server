@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
-import { ERROR_MESSAGES } from 'src/constants/error-messages';
 import { ERROR_CODES } from '../constants/error-codes';
+import { ERROR_MESSAGES } from '../constants/error-messages';
 
 export function validationException(errors: ValidationError[]): BadRequestException {
   const firstError = errors[0];
