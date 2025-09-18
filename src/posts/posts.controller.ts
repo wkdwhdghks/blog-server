@@ -1,7 +1,9 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
-import { PostDetailDto, PostDto, UpdatePostDto } from './dto/post.dto';
+import { PostDto } from './dto/post.dto';
+import { PostDetailDto } from './dto/post-detail.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -36,7 +38,7 @@ export class PostsController {
   @ApiParam({ name: 'id', description: '게시글 ID' })
   @ApiBody({ type: UpdatePostDto })
   @ApiOkResponse({ type: PostDto })
-  async update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdatePostDto) {
-    return await this.postsService.updatePost(id, body);
+  async update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdatePostDto) {
+    return await this.postsService.updatePost(id, data);
   }
 }
