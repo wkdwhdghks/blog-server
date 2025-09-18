@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { CreatePostDto } from './dto/create-post-dto';
 import { PostDto } from './dto/post.dto';
 import { PostDetailDto } from './dto/post-detail.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -27,9 +28,12 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('write')
-  async write(@Body() body, @Req() req) {
-    return { message: '글 작성 성공', user: req.user, data: body };
+  @Post()
+  @ApiOperation({ summary: '게시글 작성', description: '새로운 게시글을 작성합니다.' })
+  @ApiBody({ type: CreatePostDto })
+  @ApiOkResponse({ type: PostDto })
+  async create(@Body() data: CreatePostDto) {
+    return await this.postsService.createPost(data);
   }
 
   @UseGuards(JwtAuthGuard)
