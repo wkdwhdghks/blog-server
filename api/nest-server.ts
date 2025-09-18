@@ -4,10 +4,10 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import type { Express } from 'express';
-import { validationException } from 'src/utils/validation-exception';
 import { AppModule } from '../src/app.module';
 import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter';
 import { TransformInterceptor } from '../src/common/interceptors/transform.interceptor';
+import { validationException } from '../src/utils/validation-exception';
 
 let cachedHandler: Express | null = null;
 
