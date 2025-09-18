@@ -16,6 +16,7 @@ export function validationException(errors: ValidationError[]): BadRequestExcept
       message = ERROR_MESSAGES.INVALID_FIELD;
       break;
     case 'isNotEmpty':
+    case 'arrayNotEmpty':
       code = ERROR_CODES.REQUIRED_FIELD;
       message = ERROR_MESSAGES.REQUIRED_FIELD;
       break;
