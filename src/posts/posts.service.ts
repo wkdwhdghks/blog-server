@@ -77,6 +77,8 @@ export class PostsService {
 
       await this.createPostTags(id, tags, prisma);
 
+      await prisma.tag.deleteMany({ where: { posts: { none: {} } } });
+
       const updatedPost = await prisma.post.findUnique({
         where: { id },
         include: { tags: { include: { tag: { select: { name: true } } } } },
