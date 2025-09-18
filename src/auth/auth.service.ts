@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { JwtPayload } from 'src/types/jwt-payload.type';
 import { ERROR_CODES } from '../constants/error-codes';
 import { ERROR_MESSAGES } from '../constants/error-messages';
 import { UserDto } from '../users/dto/user.dto';
@@ -55,11 +56,11 @@ export class AuthService {
     await this.usersService.removeRefreshToken(id);
   }
 
-  private createAccessToken(payload) {
-    return this.jwtService.sign({ sub: payload.sub, email: payload.email }, { expiresIn: '1h' });
+  private createAccessToken({ sub, email }: JwtPayload) {
+    return this.jwtService.sign({ sub, email }, { expiresIn: '1h' });
   }
 
-  private createRefreshToken(payload) {
-    return this.jwtService.sign({ sub: payload.sub, email: payload.email }, { expiresIn: '2h' });
+  private createRefreshToken({ sub, email }: JwtPayload) {
+    return this.jwtService.sign({ sub, email }, { expiresIn: '2h' });
   }
 }

@@ -12,6 +12,6 @@ export class TagsService {
       orderBy: { posts: { _count: 'desc' } },
     });
 
-    return tags.map((tag) => ({ name: tag.name, count: tag._count.posts }));
+    return tags.map(({ name, _count }) => ({ name, count: _count.posts }));
   }
 }

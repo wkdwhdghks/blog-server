@@ -1,6 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { ERROR_CODES } from 'src/constants/error-codes';
+import { ERROR_MESSAGES } from 'src/constants/error-messages';
 import { PrismaService } from '../prisma/prisma.service';
-import { PostDetailDto, PostDto, UpdatePostDto } from './dto/post.dto';
+import { PostDto } from './dto/post.dto';
+import { PostDetailDto } from './dto/post-detail.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -15,10 +19,7 @@ export class PostsService {
       include: { tags: { select: { tag: { select: { name: true } } } } },
     });
 
-    return posts.map(({ tags, ...post }) => ({
-      ...post,
-      tags: tags.map((postTag) => ({ name: postTag.tag.name })),
-    }));
+    return posts.map(({ tags, ...post }) => ({ ...post, tags: tags.map(({ tag }) => ({ name: tag.name })) }));
   }
 
   async getPost(id: number): Promise<PostDetailDto> {
@@ -29,30 +30,43 @@ export class PostsService {
     ]);
 
     if (!currentPost) {
-      return { post: null, navigation: { prev: null, next: null } };
+      throw new NotFoundException({ code: ERROR_CODES.POST_NOT_FOUND, message: ERROR_MESSAGES.POST_NOT_FOUND });
     }
 
-    const post = { ...currentPost, tags: currentPost.tags.map((tag) => ({ name: tag.tag.name })) };
+    const post = { ...currentPost, tags: currentPost.tags.map(({ tag }) => ({ name: tag.name })) };
     const navigation = { prev: prevPost, next: nextPost };
 
     return { post, navigation };
   }
 
-  async updatePost(id: number, updatePostDto: UpdatePostDto): Promise<PostDto> {
-    const { tags, ...post } = updatePostDto;
+  async updatePost(id: number, data: UpdatePostDto): Promise<PostDto> {
+    const post = await this.prisma.post.findUnique({ where: { id } });
+
+    if (!post) {
+      throw new NotFoundException({ code: ERROR_CODES.POST_NOT_FOUND, message: ERROR_MESSAGES.POST_NOT_FOUND });
+    }
+
+    const { title, content, summary, readingTime, tags } = data;
 
     const updatedPost = await this.prisma.post.update({
       where: { id },
       data: {
-        ...post,
+        title,
+        content,
+        summary,
+        readingTime,
         tags: {
           deleteMany: {},
-          create: tags.map((tagName) => ({ tag: { connectOrCreate: { where: { name: tagName }, create: { name: tagName } } } })),
+          ...(tags.length > 0 && {
+            create: tags.map((name) => ({
+              tag: { connectOrCreate: { where: { name }, create: { name } } },
+            })),
+          }),
         },
       },
       include: { tags: { include: { tag: { select: { name: true } } } } },
     });
 
-    return { ...updatedPost, tags: updatedPost.tags.map((tag) => ({ name: tag.tag.name })) };
+    return { ...updatedPost, tags: updatedPost.tags.map(({ tag }) => ({ name: tag.name })) };
   }
 }

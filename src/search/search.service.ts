@@ -21,14 +21,9 @@ export class SearchService {
     const posts = await this.prisma.post.findMany({
       where,
       orderBy: { createdAt: 'desc' },
-      include: {
-        tags: { include: { tag: { select: { name: true } } } },
-      },
+      include: { tags: { include: { tag: { select: { name: true } } } } },
     });
 
-    return posts.map(({ tags, ...post }) => ({
-      ...post,
-      tags: tags.map((tag) => ({ name: tag.tag.name })),
-    }));
+    return posts.map(({ tags, ...post }) => ({ ...post, tags: tags.map(({ tag }) => ({ name: tag.name })) }));
   }
 }
