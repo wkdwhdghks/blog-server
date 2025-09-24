@@ -23,6 +23,7 @@ model Post {
   updatedAt   DateTime  @updatedAt
   summary     String
   readingTime Int       @default(0)
+  html        String
   Comment     Comment[]
   tags        PostTag[]
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PostDto } from './post.dto';
+import { PostFullDto } from './post.dto';
 
 export class NavigationItemDto {
   @ApiProperty({ description: '게시글 ID' })
@@ -18,8 +18,8 @@ export class NavigationDto {
 }
 
 export class PostDetailDto {
-  @ApiProperty({ description: '게시글', type: PostDto })
-  post: PostDto;
+  @ApiProperty({ description: '게시글', type: PostFullDto })
+  post: PostFullDto;
 
   @ApiProperty({ description: '네비게이션', type: NavigationDto })
   navigation: NavigationDto;
