@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TagDto } from '../../tags/dto/tag.dto';
 
-export class PostDto {
+export class PostSummaryDto {
   @ApiProperty({ description: '아이디' })
   id: number;
 
@@ -18,7 +18,7 @@ export class PostDto {
   tags: TagDto[];
 }
 
-export class PostFullDto extends PostDto {
+export class PostDto extends PostSummaryDto {
   @ApiProperty({ description: '내용' })
   content: string;
 

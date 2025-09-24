@@ -3,7 +3,7 @@ import { ERROR_CODES } from '../constants/error-codes';
 import { ERROR_MESSAGES } from '../constants/error-messages';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post-dto';
-import { PostDto } from './dto/post.dto';
+import { PostSummaryDto } from './dto/post.dto';
 import { PostDetailDto } from './dto/post-detail.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
@@ -11,7 +11,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 export class PostsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getPosts(tag?: string): Promise<PostDto[]> {
+  async getPosts(tag?: string): Promise<PostSummaryDto[]> {
     const where = tag ? { tags: { some: { tag: { name: tag } } } } : {};
 
     const posts = await this.prisma.post.findMany({
@@ -53,7 +53,7 @@ export class PostsService {
     return { post, navigation };
   }
 
-  async createPost(data: CreatePostDto): Promise<PostDto> {
+  async createPost(data: CreatePostDto): Promise<PostSummaryDto> {
     const { title, content, summary, readingTime, html, tags } = data;
 
     return await this.prisma.$transaction(async (prisma) => {
@@ -74,7 +74,7 @@ export class PostsService {
     });
   }
 
-  async updatePost(id: number, data: UpdatePostDto): Promise<PostDto> {
+  async updatePost(id: number, data: UpdatePostDto): Promise<PostSummaryDto> {
     const post = await this.prisma.post.findUnique({ where: { id } });
 
     if (!post) {
