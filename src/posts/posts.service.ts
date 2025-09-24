@@ -17,7 +17,7 @@ export class PostsService {
     const posts = await this.prisma.post.findMany({
       where: where,
       orderBy: { createdAt: 'desc' },
-      include: { tags: { select: { tag: { select: { name: true } } } } },
+      select: { id: true, title: true, createdAt: true, summary: true, tags: { select: { tag: { select: { name: true } } } } },
     });
 
     return posts.map(({ tags, ...post }) => ({ ...post, tags: tags.map(({ tag }) => ({ name: tag.name })) }));
@@ -25,7 +25,20 @@ export class PostsService {
 
   async getPost(id: number): Promise<PostDetailDto> {
     const [currentPost, nextPost, prevPost] = await Promise.all([
-      this.prisma.post.findUnique({ where: { id }, include: { tags: { include: { tag: { select: { name: true } } } } } }),
+      this.prisma.post.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          title: true,
+          summary: true,
+          content: true,
+          html: true,
+          readingTime: true,
+          createdAt: true,
+          updatedAt: true,
+          tags: { select: { tag: { select: { name: true } } } },
+        },
+      }),
       this.prisma.post.findFirst({ where: { id: { gt: id } }, select: { id: true, title: true }, orderBy: { id: 'asc' } }),
       this.prisma.post.findFirst({ where: { id: { lt: id } }, select: { id: true, title: true }, orderBy: { id: 'desc' } }),
     ]);
@@ -41,16 +54,16 @@ export class PostsService {
   }
 
   async createPost(data: CreatePostDto): Promise<PostDto> {
-    const { title, content, summary, readingTime, tags } = data;
+    const { title, content, summary, readingTime, html, tags } = data;
 
     return await this.prisma.$transaction(async (prisma) => {
-      const post = await prisma.post.create({ data: { title, content, summary, readingTime } });
+      const post = await prisma.post.create({ data: { title, content, summary, readingTime, html } });
 
       await this.createPostTags(post.id, tags, prisma);
 
       const createdPost = await prisma.post.findUnique({
         where: { id: post.id },
-        include: { tags: { include: { tag: { select: { name: true } } } } },
+        select: { id: true, title: true, summary: true, createdAt: true, tags: { select: { tag: { select: { name: true } } } } },
       });
 
       if (!createdPost) {
@@ -68,10 +81,10 @@ export class PostsService {
       throw new NotFoundException({ code: ERROR_CODES.POST_NOT_FOUND, message: ERROR_MESSAGES.POST_NOT_FOUND });
     }
 
-    const { title, content, summary, readingTime, tags } = data;
+    const { title, content, summary, readingTime, html, tags } = data;
 
     return await this.prisma.$transaction(async (prisma) => {
-      await prisma.post.update({ where: { id }, data: { title, content, summary, readingTime } });
+      await prisma.post.update({ where: { id }, data: { title, content, summary, readingTime, html } });
 
       await prisma.postTag.deleteMany({ where: { postId: id } });
 
@@ -81,7 +94,7 @@ export class PostsService {
 
       const updatedPost = await prisma.post.findUnique({
         where: { id },
-        include: { tags: { include: { tag: { select: { name: true } } } } },
+        select: { id: true, title: true, summary: true, createdAt: true, tags: { select: { tag: { select: { name: true } } } } },
       });
 
       if (!updatedPost) {

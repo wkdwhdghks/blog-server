@@ -22,6 +22,11 @@ export class CreatePostDto {
   @Min(0)
   readingTime: number;
 
+  @ApiProperty({ description: 'HTML' })
+  @IsString()
+  @IsNotEmpty()
+  html: string;
+
   @ApiProperty({ description: '태그명 목록', type: [String] })
   @IsArray()
   @ArrayNotEmpty()
