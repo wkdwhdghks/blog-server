@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { createClient } from '@supabase/supabase-js';
+import { ERROR_CODES } from '../constants/error-codes';
+import { ERROR_MESSAGES } from '../constants/error-messages';
 import { UploadImageDto } from './dto/upload-image.dto';
 
 @Injectable()
@@ -8,7 +10,7 @@ export class UploadService {
 
   async uploadImage(file: Express.Multer.File): Promise<UploadImageDto> {
     if (!file) {
-      throw new BadRequestException('파일이 없습니다');
+      throw new BadRequestException({ code: ERROR_CODES.FILE_NOT_PROVIDED, message: ERROR_MESSAGES.FILE_NOT_PROVIDED });
     }
 
     const fileExtension = file.originalname.split('.').pop();
@@ -19,7 +21,7 @@ export class UploadService {
     });
 
     if (error) {
-      throw new BadRequestException(`업로드 실패: ${error.message}`);
+      throw new BadRequestException({ code: ERROR_CODES.FILE_UPLOAD_FAILED, message: ERROR_MESSAGES.FILE_UPLOAD_FAILED });
     }
 
     const {

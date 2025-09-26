@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ERROR_CODES } from '../constants/error-codes';
 import { ERROR_MESSAGES } from '../constants/error-messages';
 import { PrismaService } from '../prisma/prisma.service';
@@ -67,7 +67,7 @@ export class PostsService {
       });
 
       if (!createdPost) {
-        throw new NotFoundException({ code: ERROR_CODES.POST_NOT_FOUND, message: ERROR_MESSAGES.POST_NOT_FOUND });
+        throw new InternalServerErrorException({ code: ERROR_CODES.POST_CREATE_FAILED, message: ERROR_MESSAGES.POST_NOT_FOUND });
       }
 
       return { ...createdPost, tags: createdPost.tags.map(({ tag }) => ({ name: tag.name })) };
@@ -98,7 +98,7 @@ export class PostsService {
       });
 
       if (!updatedPost) {
-        throw new NotFoundException({ code: ERROR_CODES.POST_NOT_FOUND, message: ERROR_MESSAGES.POST_NOT_FOUND });
+        throw new InternalServerErrorException({ code: ERROR_CODES.POST_UPDATE_FAILED, message: ERROR_MESSAGES.POST_NOT_FOUND });
       }
 
       return { ...updatedPost, tags: updatedPost.tags.map(({ tag }) => ({ name: tag.name })) };
