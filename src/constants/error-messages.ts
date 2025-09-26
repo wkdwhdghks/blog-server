@@ -10,4 +10,8 @@ export const ERROR_MESSAGES = {
   VALIDATION_ERROR: '요청 정보를 확인해주세요.',
 
   POST_NOT_FOUND: '게시글을 찾을 수 없습니다.',
+  POST_CREATE_FAILED: '게시글 생성에 실패했습니다.',
+  POST_UPDATE_FAILED: '게시글 수정에 실패했습니다.',
+  FILE_NOT_PROVIDED: '파일을 선택해주세요.',
+  FILE_UPLOAD_FAILED: '파일 업로드에 실패했습니다.',
 };
