@@ -10,7 +10,11 @@ import { validationException } from './utils/validation-exception';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({ origin: 'http://localhost:3001', credentials: true, methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS' });
+  app.enableCors({
+    origin: process.env.CLIENT_URL ?? 'http://localhost:3001',
+    credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  });
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true, exceptionFactory: validationException }),
@@ -29,6 +33,6 @@ async function bootstrap() {
   };
 
   SwaggerModule.setup('swagger', app, document, options);
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(3000);
 }
 bootstrap();

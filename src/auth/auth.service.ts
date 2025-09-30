@@ -57,10 +57,10 @@ export class AuthService {
   }
 
   private createAccessToken({ sub, email }: JwtPayload) {
-    return this.jwtService.sign({ sub, email }, { expiresIn: '1h' });
+    return this.jwtService.sign({ sub, email }, { expiresIn: '24h' });
   }
 
   private createRefreshToken({ sub, email }: JwtPayload) {
-    return this.jwtService.sign({ sub, email }, { expiresIn: '2h' });
+    return this.jwtService.sign({ sub, email }, { expiresIn: '7d' });
   }
 }

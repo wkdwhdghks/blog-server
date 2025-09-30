@@ -15,7 +15,11 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   if (!cachedHandler) {
     const app = await NestFactory.create(AppModule);
 
-    app.enableCors({ origin: 'http://localhost:3001', credentials: true, methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS' });
+    app.enableCors({
+      origin: process.env.CLIENT_URL ?? 'http://localhost:3001',
+      credentials: true,
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    });
     app.use(cookieParser());
     app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true, exceptionFactory: validationException }),

@@ -25,20 +25,7 @@ export class PostsService {
 
   async getPost(id: number): Promise<PostDetailDto> {
     const [currentPost, nextPost, prevPost] = await Promise.all([
-      this.prisma.post.findUnique({
-        where: { id },
-        select: {
-          id: true,
-          title: true,
-          summary: true,
-          content: true,
-          html: true,
-          readingTime: true,
-          createdAt: true,
-          updatedAt: true,
-          tags: { select: { tag: { select: { name: true } } } },
-        },
-      }),
+      this.prisma.post.findUnique({ where: { id }, include: { tags: { select: { tag: { select: { name: true } } } } } }),
       this.prisma.post.findFirst({ where: { id: { gt: id } }, select: { id: true, title: true }, orderBy: { id: 'asc' } }),
       this.prisma.post.findFirst({ where: { id: { lt: id } }, select: { id: true, title: true }, orderBy: { id: 'desc' } }),
     ]);

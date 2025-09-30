@@ -24,7 +24,6 @@ model Post {
   summary     String
   readingTime Int       @default(0)
   html        String
-  Comment     Comment[]
   tags        PostTag[]
 }
 
@@ -41,16 +40,4 @@ model PostTag {
   tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([postId, tagId])
-}
-
-model Comment {
-  id            Int       @id @default(autoincrement())
-  nickname      String
-  content       String
-  createdAt     DateTime  @default(now())
-  postId        Int
-  parentId      Int?
-  Comment       Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
-  other_Comment Comment[] @relation("CommentToComment")
-  Post          Post      @relation(fields: [postId], references: [id])
 }
